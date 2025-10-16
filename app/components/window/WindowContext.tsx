@@ -16,7 +16,7 @@ const WindowContext = createContext<WindowContextProps | undefined>(undefined)
 export const WindowContextProvider = ({
   children,
   titlebar = {
-    title: 'Electron React App',
+    title: 'SamCux Electron Starter',
     icon: 'appIcon.png',
     titleCentered: false,
     menuItems: [],
@@ -38,9 +38,7 @@ export const WindowContextProvider = ({
 
   return (
     <WindowContext.Provider value={{ titlebar, window: initProps }}>
-      <TitlebarContextProvider>
-        {/* <Titlebar /> */}
-      </TitlebarContextProvider>
+      <TitlebarContextProvider>{/* <Titlebar /> */}</TitlebarContextProvider>
       <div className="window-content">{children}</div>
     </WindowContext.Provider>
   )

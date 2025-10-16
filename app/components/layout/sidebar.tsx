@@ -1,6 +1,6 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
-import { Home, Image, Gauge, Settings, Download, MessageCircle } from 'lucide-react'
+import { Home, Image, Gauge, Settings, Download, MessageCircle, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 
 const navigation = [
   {
@@ -44,9 +44,11 @@ const navigation = [
 interface SidebarProps {
   currentPath?: string
   onNavigate?: (path: string) => void
+  mode?: 'docked' | 'overlay'
+  onToggleDock?: () => void
 }
 
-export function Sidebar({ currentPath = '/', onNavigate }: SidebarProps) {
+export function Sidebar({ currentPath = '/', onNavigate, mode = 'docked', onToggleDock }: SidebarProps) {
   // Function to determine if a navigation item is active
   const isActiveRoute = (href: string) => {
     if (href === '/') {
@@ -65,7 +67,22 @@ export function Sidebar({ currentPath = '/', onNavigate }: SidebarProps) {
   }
 
   return (
-    <div className="w-55 flex flex-col">
+    <div className="w-55 flex flex-col relative">
+      {/* Header with toggle button */}
+      <div className="px-3 pt-3 pb-2 flex items-center justify-end">
+        <button
+          type="button"
+          onClick={onToggleDock}
+          className="no-drag inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-200/60 dark:bg-gray-700/60 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all shadow-sm"
+          aria-label={mode === 'docked' ? 'Undock sidebar' : 'Dock sidebar'}
+        >
+          {mode === 'docked' ? (
+            <PanelLeftClose className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+          ) : (
+            <PanelLeftOpen className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+          )}
+        </button>
+      </div>
       {/* Navigation */}
       <nav className="flex-1 pb-4 px-4 space-y-2">
         {navigation.map((item) => {

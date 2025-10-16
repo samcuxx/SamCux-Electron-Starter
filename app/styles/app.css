@@ -430,3 +430,18 @@
 .dark .backdrop-blur-light {
   background-color: rgba(0, 0, 0, 0.8);
 }
+
+/* Acrylic panel (Fluent-like) for overlay sidebar */
+.acrylic-panel {
+  /* Stronger blur with saturation for acrylic feel */
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  /* Subtle tint based on theme */
+  background-color: rgba(24, 24, 24, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dark .acrylic-panel {
+  background-color: rgba(24, 24, 24, 0.42);
+  border-color: rgba(255, 255, 255, 0.06);
+}

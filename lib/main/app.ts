@@ -11,8 +11,10 @@ export function createAppWindow(): void {
 
   // Create the main window.
   const mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
+    width: 1000,
+    height: 700,
+    // width: 1280,
+    // height: 800,
     minWidth: 800,
     minHeight: 600,
     show: false,
@@ -21,7 +23,7 @@ export function createAppWindow(): void {
     icon: appIcon,
     frame: false,
     titleBarStyle: 'hiddenInset',
-    title: 'Electron React App',
+    title: 'SamCux Electron Starter',
     maximizable: true,
     resizable: true,
     webPreferences: {

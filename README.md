@@ -1,4 +1,4 @@
-# Electron React App
+# SamCux Electron Starter
 
 A modern Electron application template with React, Vite, TypeScript, and TailwindCSS. This project provides a solid foundation for developing cross-platform desktop applications.
 
@@ -59,10 +59,10 @@ Clone the repository:
 
 ```bash
 # Clone the repository
-git clone https://github.com/guasam/electron-react-app
+git clone https://github.com/samcuxx/SamCux-Electron-Starter
 
 # Change directory
-cd electron-react-app
+cd SamCux-Electron-Starter
 
 # Install dependencies (use any package manager: npm, yarn, pnpm, bun)
 npm install

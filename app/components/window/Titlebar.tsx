@@ -4,11 +4,7 @@ import { useTitlebarContext } from './TitlebarContext'
 import { TitlebarMenu } from './TitlebarMenu'
 import { useConveyor } from '@/app/hooks/use-conveyor'
 
-const SVG_PATHS = {
-  close: 'M 0,0 0,0.7 4.3,5 0,9.3 0,10 0.7,10 5,5.7 9.3,10 10,10 10,9.3 5.7,5 10,0.7 10,0 9.3,0 5,4.3 0.7,0 Z',
-  maximize: 'M 0,0 0,10 10,10 10,0 Z M 1,1 9,1 9,9 1,9 Z',
-  minimize: 'M 0,5 10,5 10,6 0,6 Z',
-} as const
+// removed legacy SVG paths; buttons now rendered as styled dots
 
 export const Titlebar = () => {
   const { title, icon, titleCentered, menuItems } = useWindowContext().titlebar
@@ -31,16 +27,16 @@ export const Titlebar = () => {
     <div className={`window-titlebar ${wcontext?.platform ? `platform-${wcontext.platform}` : ''}`}>
       {wcontext?.platform === 'win32' && (
         <div className="window-titlebar-icon">
-          <img src={icon} />
+          <img src={icon} alt={title || ''} />
         </div>
       )}
 
       <div
         className="window-titlebar-title"
         {...(titleCentered && { 'data-centered': true })}
-        style={{ visibility: menusVisible ? 'hidden' : 'visible' }}
+        data-hidden={menusVisible ? 'true' : 'false'}
       >
-        {title}
+        {/* {title}  SamCux Electron Starter */}
       </div>
       {menusVisible && <TitlebarMenu />}
       {wcontext?.platform === 'win32' && <TitlebarControls />}
@@ -53,14 +49,14 @@ const TitlebarControls = () => {
 
   return (
     <div className="window-titlebar-controls">
-      {wcontext?.minimizable && <TitlebarControlButton label="minimize" svgPath={SVG_PATHS.minimize} />}
-      {wcontext?.maximizable && <TitlebarControlButton label="maximize" svgPath={SVG_PATHS.maximize} />}
-      <TitlebarControlButton label="close" svgPath={SVG_PATHS.close} />
+      {wcontext?.minimizable && <TitlebarControlButton label="minimize" />}
+      {wcontext?.maximizable && <TitlebarControlButton label="maximize" />}
+      <TitlebarControlButton label="close" />
     </div>
   )
 }
 
-const TitlebarControlButton = ({ svgPath, label }: { svgPath: string; label: string }) => {
+const TitlebarControlButton = ({ label }: { label: string }) => {
   const { windowMinimize, windowMaximizeToggle, windowClose } = useConveyor('window')
 
   const handleAction = () => {
@@ -74,9 +70,7 @@ const TitlebarControlButton = ({ svgPath, label }: { svgPath: string; label: str
 
   return (
     <div aria-label={label} className="titlebar-controlButton" onClick={handleAction}>
-      <svg width="10" height="10">
-        <path fill="currentColor" d={svgPath} />
-      </svg>
+      <span className={`control-dot control-${label}`} />
     </div>
   )
 }
