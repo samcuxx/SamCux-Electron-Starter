@@ -1,6 +1,7 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
-import { Home, Image, Gauge, Settings, Download, MessageCircle, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Home, Image, Gauge, Settings, Download, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/components/ui/tooltip'
 
 const navigation = [
   {
@@ -44,11 +45,10 @@ const navigation = [
 interface SidebarProps {
   currentPath?: string
   onNavigate?: (path: string) => void
-  mode?: 'docked' | 'overlay'
-  onToggleDock?: () => void
 }
 
-export function Sidebar({ currentPath = '/', onNavigate, mode = 'docked', onToggleDock }: SidebarProps) {
+export function Sidebar({ currentPath = '/', onNavigate }: SidebarProps) {
+  const [compact, setCompact] = React.useState(false)
   // Function to determine if a navigation item is active
   const isActiveRoute = (href: string) => {
     if (href === '/') {
@@ -67,63 +67,80 @@ export function Sidebar({ currentPath = '/', onNavigate, mode = 'docked', onTogg
   }
 
   return (
-    <div className="w-55 flex flex-col relative">
-      {/* Header with toggle button */}
-      <div className="px-3 pt-3 pb-2 flex items-center justify-end">
+    <div className={cn(compact ? 'w-16' : 'w-55', 'flex flex-col transition-[width] duration-200')}>
+      <div className={cn('px-3 py-3 flex items-center', compact ? 'justify-center' : 'justify-end')}>
         <button
-          type="button"
-          onClick={onToggleDock}
-          className="no-drag inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-200/60 dark:bg-gray-700/60 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all shadow-sm"
-          aria-label={mode === 'docked' ? 'Undock sidebar' : 'Dock sidebar'}
-        >
-          {mode === 'docked' ? (
-            <PanelLeftClose className="w-4 h-4 text-gray-700 dark:text-gray-300" />
-          ) : (
-            <PanelLeftOpen className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+          aria-label={compact ? 'Expand sidebar' : 'Collapse sidebar'}
+          onClick={() => setCompact((v) => !v)}
+          className={cn(
+            'h-8 w-8 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100/60 dark:hover:bg-gray-800/60 transition-colors duration-200'
           )}
+        >
+          {compact ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
       </div>
       {/* Navigation */}
-      <nav className="flex-1 pb-4 px-4 space-y-2">
+      <nav className={cn('flex-1 pb-4 space-y-2', compact ? 'px-2' : 'px-4')}>
         {navigation.map((item) => {
           const Icon = item.icon
           const isActive = isActiveRoute(item.href)
 
-          return (
+          const button = (
             <button
               key={item.name}
               onClick={() => handleNavClick(item.href)}
               className={cn(
-                'flex items-center space-x-3 px-4 py-2 rounded-full transition-all duration-200 group relative w-full text-left',
-                isActive
+                'flex items-center rounded-full transition-all duration-200 group relative w-full text-left will-change-transform',
+                compact ? 'justify-center px-0 py-1' : 'px-2 py-1',
+                !compact && isActive
                   ? 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 text-blue-700 dark:text-blue-300 shadow-sm'
-                  : 'hover:bg-gray-100/50 dark:hover:bg-gray-800/50 text-gray-700 dark:text-gray-300'
+                  : !compact
+                    ? 'hover:bg-gray-100/50 dark:hover:bg-gray-800/50 text-gray-700 dark:text-gray-300'
+                    : 'text-gray-700 dark:text-gray-300'
               )}
+              title={item.name}
             >
               <div
                 className={cn(
-                  'flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200',
+                  'flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 flex-none transform-gpu',
                   isActive
                     ? `bg-gradient-to-r ${item.gradient} shadow-lg`
-                    : 'bg-gray-200/50 dark:bg-gray-700/50 group-hover:bg-gradient-to-r group-hover:' + item.gradient
+                    : 'bg-gray-200/50 dark:bg-gray-700/50 group-hover:bg-gradient-to-r group-hover:' + item.gradient,
+                  compact && isActive ? 'ring-2 ring-blue-400/60 ring-offset-2 ring-offset-transparent' : ''
                 )}
               >
                 <Icon
                   className={cn(
-                    'w-5 h-5 transition-colors duration-200 rounded',
+                    'w-5 h-5 transition-colors duration-200 rounded transform-gpu group-hover:scale-105',
                     isActive ? 'text-white' : 'text-gray-600 dark:text-gray-400 group-hover:text-white'
                   )}
                 />
               </div>
-              <span
+              <div
                 className={cn(
-                  'font-medium transition-colors duration-200',
-                  isActive ? 'text-blue-700 dark:text-blue-300' : ''
+                  'overflow-hidden transition-all duration-200 transform-gpu',
+                  compact ? 'w-0 opacity-0 ml-0 -translate-x-1' : 'w-auto opacity-100 ml-3 translate-x-0'
                 )}
               >
-                {item.name}
-              </span>
+                <span
+                  className={cn('font-medium whitespace-nowrap', isActive ? 'text-blue-700 dark:text-blue-300' : '')}
+                >
+                  {item.name}
+                </span>
+              </div>
             </button>
+          )
+          return compact ? (
+            <TooltipProvider key={item.name}>
+              <Tooltip delayDuration={200}>
+                <TooltipTrigger asChild>{button}</TooltipTrigger>
+                <TooltipContent side="right" className="backdrop-blur-light dropdown-shadow">
+                  {item.name}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            button
           )
         })}
       </nav>
